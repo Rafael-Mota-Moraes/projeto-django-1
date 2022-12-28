@@ -2,7 +2,8 @@ from django.http import Http404
 from django.shortcuts import get_list_or_404, get_object_or_404, render
 
 from recipes.models import Recipe
-from utils.recipes.factory import make_recipe
+
+# from utils.recipes.factory import make_recipe
 
 
 def home(request):
@@ -14,10 +15,10 @@ def home(request):
 
 
 def category(request, category_id):
-    recipes = get_list_or_404(Recipe.objects.filter(
+    recipes = Recipe.objects.filter(
         is_published=True,
         category__id=category_id
-    ).order_by('-id'))
+    ).order_by('-id')
 
 
     return render(request, 'recipes/pages/category.html', context={
@@ -27,10 +28,11 @@ def category(request, category_id):
 
 
 def recipe(request, id):
-    recipe = Recipe.objects.filter(
+    recipe = get_object_or_404(
+        Recipe,
         pk=id,
-        is_published=True,
-    ).order_by('-id').first()
+        is_published=True
+    )
     
     return render(request, 'recipes/pages/recipe-view.html', context={
         'recipe': recipe,
