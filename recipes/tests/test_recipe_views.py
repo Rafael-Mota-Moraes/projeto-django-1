@@ -25,7 +25,7 @@ class RecipeViewsTest(TestCase):
             response.content.decode('utf-8')
      )
 
-    def recipe_home_template_loads_recipes(self):
+    def test_recipe_home_template_loads_recipes(self):
         category = Category.objects.create(name='Category')
         author = User.objects.create_user(
             first_name='user',
@@ -49,8 +49,15 @@ class RecipeViewsTest(TestCase):
             is_published=True,
         )
 
+        response = self.client.get(reverse('recipes:home'))
+        content = response.content.decode('utf-8')
+        response_context_recipes = response.context['recipes']
 
-        assert 1 == 1
+        self.assertIn('Recipe Title', content)
+        self.assertIn('10 Minutos', content)
+        self.assertIn('5 Porções', content)
+        self.assertEqual(len(response_context_recipes), 1)
+
 
     def test_recipe_category_view_function_is_correct(self):
         view = resolve(reverse('recipes:category', kwargs={'category_id': 1}))
